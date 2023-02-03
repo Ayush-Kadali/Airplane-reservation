@@ -7,7 +7,7 @@ import sys
 
 # Connect to the database
 cnx = mysql.connector.connect(
-    user="root", password="Kayush@2005", host="localhost", database="AIRPLANE"
+    user="root", password="tiger123", host="localhost", database="AIRPLANE"
 )
 
 
@@ -19,13 +19,19 @@ def main():
     options = {1: sign_in, 2: sign_up, 3: delete_account, 4: exit}
 
     while True:
+        
         print("Menu:")
         print("1. Sign in")
         print("2. Sign up")
         print("3. Delete account")
         print("4. Exit")
         choice = int(input("Enter your choice: "))
-        options[choice]()
+        if choice in [1,2,3,4]:
+            options[choice]()
+        else:
+            print("Please enter a valid answer!!")
+            main()
+
 
 
 def sign_in():
@@ -35,8 +41,11 @@ def sign_in():
     print("1. Admin")
     print("2. User")
     choice = int(input("Enter your choice: "))
-    options[choice]()
-
+    if choice in [1,2]:
+        options[choice]()
+    else:
+        print("Enter a valid option!!!")
+        sign_in()
 
 def sign_in_admin():
 
@@ -89,8 +98,11 @@ def sign_up():
     print("1. Admin")
     print("2. User")
     choice = int(input("Enter your choice: "))
-    options[choice]()
-
+    if choice in [1,2]:
+        options[choice]()
+    else:
+        print("Enter a valid choice!!!")
+        sign_up()
 
 def sign_up_admin():
     # Get the email and password to sign up with
@@ -132,7 +144,11 @@ def delete_account():
     print("1. Admin")
     print("2. User")
     choice = int(input("Enter your choice: "))
-    options[choice]()
+    if choice in [1,2]:
+        options[choice]()
+    else:
+        print("Enter a valid choice!!!")
+        delete_account()
 
 
 def delete_admin_account():
@@ -177,7 +193,11 @@ def admin_menu():
         print("2. Airline company operations")
         print("3. Exit")
         choice = int(input("Enter your choice: "))
-        options[choice]()
+        if choice in [1,2,3]:
+            options[choice]()
+        else:
+            print("Enter a valid choice")
+            admin_menu()
 
 
 def airport_menu():
@@ -193,7 +213,11 @@ def airport_menu():
         choice = int(input("Enter your choice: "))
         if choice == 5:
             break
-        options[choice]()
+        if choice in [1,2,3,4]:
+            options[choice]()
+        else:
+            print("Enter a valid choice!!!")
+            airport_menu()
 
 
 def Add_airport():
@@ -209,8 +233,20 @@ def Add_airport():
     # Execute an INSERT query to add a new airport to the AIRPORT table
     query = f"INSERT INTO AIRPORT (AIRPORT_CODE, AIRPORT_NAME, LOCATION, CITY, STATE, COUNTRY, ZIP) VALUES ('{airport_code}', '{airport_name}', '{location}', '{city}', '{state}', '{country}', '{zip_code}')"
     cursor.execute(query)
-
     cnx.commit()
+
+    cursor.execute("SELECT AIRPORT_CODE FROM AIRPORT")
+    existing_airports = [row[0] for row in cursor.fetchall()]
+
+    for airport in existing_airports:
+        if airport != airport_code : 
+            distance = int(input(f"Enter the distance between {airport_code} and {airport}: "))
+            sql = f"INSERT INTO AIRPORT_DISTANCE (DEPARTURE_AIRPORT_CODE, ARRIVAL_AIRPORT_CODE, DISTANCE) VALUES ('{airport_code}', '{airport}', {distance})"
+            # Executing the SQL query
+            cursor.execute(sql)
+            cnx.commit()
+
+
     print("Airport Addd successfully!")
     print("*" * 50)
 
@@ -254,10 +290,23 @@ def update_airport():
         country = input("Enter updated country: ")
         zip_code = input("Enter updated zip code: ")
 
+
         # Execute an UPDATE query to update the airport with the given airport code
         query = f"UPDATE AIRPORT SET AIRPORT_NAME='{airport_name}', LOCATION='{location}', CITY='{city}', STATE='{state}', COUNTRY='{country}', ZIP='{zip_code}' WHERE AIRPORT_CODE='{airport_code}'"
         cursor.execute(query)
         cnx.commit()
+
+        cursor.execute("SELECT AIRPORT_CODE FROM AIRPORT")
+        existing_airports = [row[0] for row in cursor.fetchall()]
+
+        for airport in existing_airports:
+            if airport != airport_code : 
+                distance = int(input(f"Enter the distance between {airport_code} and {airport}: "))
+                sql = f"UPDATE AIRPORT_DISTANCE SET DEPARTURE_AIRPORT_CODE = '{airport_code}', ARRIVAL_AIRPORT_CODE = '{airport}', DISTANCE = '{distance}' WHERE AIRPORT_CODE='{airport_code}')"
+                # Executing the SQL query
+                cursor.execute(sql)
+                cnx.commit()
+
         print("Airport updated successfully!")
         print("*" * 50)
 
@@ -292,7 +341,11 @@ def airline_company_menu():
         choice = int(input("Enter your choice: "))
         if choice == 5:
             break
-        options[choice]()
+        if choice in [1,2,3,4]:
+            options[choice]()
+        else:
+            print("Enter a valid choice!!!")
+            airline_company_menu()
 
 
 def Add_airline_company():
@@ -374,7 +427,11 @@ def user_menu():
         choice = int(input("Enter your choice: "))
         if choice == 5:
             break
-        options[choice]()
+        if choice in [1,2,3,4,5]:
+            options[choice]()
+        else:
+            print("Please enter a valid choice")
+            user_menu()
 
 
 def RESERVATION_menu():
